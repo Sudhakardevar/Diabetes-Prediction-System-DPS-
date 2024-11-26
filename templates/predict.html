@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #2c3e50, #4ca1af), url('https://www.transparenttextures.com/patterns/asfalt-light.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: rgba(244, 239, 239, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            margin: auto;
+        }
+        h1 {
+            color: #042129;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: #1176ba;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        td {
+            padding: 8px;
+            vertical-align: top;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .input-group label {
+            flex: 1;
+            text-align: right;
+            padding-right: 7px;
+            font-weight: bold;
+        }
+        .input-group input[type="text"] {
+            flex: 2;
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            text-align: left;
+            margin-top: 3px;
+        }
+        .result-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 4px;
+            max-width: 400px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease forwards;
+        }
+        .result.positive {
+            color: #27ae60;
+            background-color: #dff0d8;
+        }
+        .result.negative {
+            color: #c0392b;
+            background-color: #f2dede;
+        }
+        .advice {
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1rem;
+            }
+            .submit-btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        function validateForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var valid = true;
+            var ranges = {
+                pregnancies: { min: 0, max: 17 },
+                glucose: { min: 70, max: 200 },
+                blood_pressure: { min: 0, max: 125 },
+                skin_thickness: { min: 0, max: 99 },
+                insulin: { min: 0, max: 276 },
+                bmi: { min: 0, max: 70 },
+                DPF: { min: 0.08, max: 2.42 },
+                age: { min: 21, max: 81 }
+            };
+
+            Object.keys(ranges).forEach(function(field) {
+                var value = parseFloat(document.getElementById('id_' + field).value);
+                if (isNaN(value) || value < ranges[field].min || value > ranges[field].max) {
+                    document.getElementById(field + '_error').innerText = 'Enter valid data between ' + ranges[field].min + ' and ' + ranges[field].max + '.';
+                    valid = false;
+                } else {
+                    document.getElementById(field + '_error').innerText = '';
+                }
+            });
+
+            if (valid) {
+                showResult();
+            }
+
+            return valid;
+        }
+
+        function showResult() {
+            // Simulate result (replace with actual result handling)
+            var result = Math.random() >= 0.5 ? 'Positive' : 'Negative'; // Example random result
+
+            var resultContainer = document.querySelector('.result-container');
+            var resultElement = document.createElement('div');
+            resultElement.classList.add('result', result.toLowerCase());
+            resultElement.textContent = 'Result: ' + result;
+
+            var adviceElement = document.createElement('div');
+            adviceElement.classList.add('advice');
+            if (result === 'Positive') {
+                adviceElement.textContent = 'It\'s time to visit a nearby hospital or consult a doctor as soon as possible.';
+            } else {
+                adviceElement.textContent = 'Your result is negative. However, it\'s always good to maintain regular health check-ups.';
+            }
+
+            resultContainer.innerHTML = ''; // Clear previous results if any
+            resultContainer.appendChild(resultElement);
+            resultContainer.appendChild(adviceElement);
+            resultContainer.style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Prediction Page</h1>
+        <h2>Please Enter the Following Information:</h2>
+        <form method="get" action="result" onsubmit="return validateForm(event)">
+            <table>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_pregnancies">Pregnancies:</label>
+                        <input type="text" name="n1" id="id_pregnancies">
+                    </td>
+                    <td><span id="pregnancies_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_glucose">Glucose:</label>
+                        <input type="text" name="n2" id="id_glucose">
+                    </td>
+                    <td><span id="glucose_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_blood_pressure">Blood Pressure:</label>
+                        <input type="text" name="n3" id="id_blood_pressure">
+                    </td>
+                    <td><span id="blood_pressure_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_skin_thickness">Skin Thickness:</label>
+                        <input type="text" name="n4" id="id_skin_thickness">
+                    </td>
+                    <td><span id="skin_thickness_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_insulin">Insulin:</label>
+                        <input type="text" name="n5" id="id_insulin">
+                    </td>
+                    <td><span id="insulin_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_bmi">BMI:</label>
+                        <input type="text" name="n6" id="id_bmi">
+                    </td>
+                    <td><span id="bmi_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_DPF">DPF:</label>
+                        <input type="text" name="n7" id="id_DPF">
+                    </td>
+                    <td><span id="DPF_error" class="error-msg"></span></td>
+                </tr>
+                <tr>
+                    <td class="input-group">
+                        <label for="id_age">Age:</label>
+                        <input type="text" name="n8" id="id_age">
+                    </td>
+                    <td><span id="age_error" class="error-msg"></span></td>
+                </tr>
+            </table>
+            <input type="submit" class="submit-btn" value="Submit">
+        </form>
+        <div class="result-container">
+            <!-- Result will be displayed here -->
+        </div>
+    </div>
+</body>
+</html>
